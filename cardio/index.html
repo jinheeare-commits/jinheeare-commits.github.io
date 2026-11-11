@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>순환기계 구조와 기능 | 간호학과 3학년 수업자료</title>
+<meta name="description" content="간호학과 3학년 순환기계 구조와 기능 수업자료: 심장 구조, 전도계, 심음, 심박출량, 혈관, 혈압 조절">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root {
+    --red: #c0392b;
+    --red-soft: #fdecea;
+    --navy: #1f3a5f;
+    --blue: #2f64b0;
+    --blue-soft: #e8f0fb;
+    --green: #2e8b57;
+    --green-soft: #e6f4ec;
+    --amber: #d9822b;
+    --amber-soft: #fff4e2;
+    --ink: #1f2933;
+    --muted: #64707d;
+    --line: #e4e7eb;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(16,24,40,.04), 0 6px 20px rgba(16,24,40,.06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    font-size: 17px; line-height: 1.75; word-break: keep-all;
+  }
+  b, strong { color: var(--navy); }
+
+  /* 진행 막대 */
+  #progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; z-index: 50;
+    background: linear-gradient(90deg, var(--red), var(--blue)); transition: width .1s linear; }
+
+  /* 머리 영역 */
+  .hero {
+    position: relative; overflow: hidden; color: #fff;
+    background: radial-gradient(1200px 500px at 85% -10%, rgba(255,255,255,.14), transparent 60%),
+                linear-gradient(135deg, #8e1f1f 0%, var(--red) 38%, var(--navy) 100%);
+    padding: 72px 24px 120px;
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; position: relative; z-index: 2; }
+  .badge { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 999px;
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); font-size: 14px; font-weight: 600; }
+  .hero h1 { font-size: clamp(34px, 5.4vw, 58px); line-height: 1.2; margin: 18px 0 12px; letter-spacing: -0.02em; }
+  .hero p { font-size: 19px; opacity: .92; margin: 0; max-width: 680px; }
+  .hero .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .hero .chips a { color: #fff; text-decoration: none; font-size: 15px; padding: 8px 16px; border-radius: 10px;
+    background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.2); transition: background .2s; }
+  .hero .chips a:hover { background: rgba(0,0,0,.32); }
+  .ecg { position: absolute; left: 0; right: 0; bottom: 18px; height: 90px; z-index: 1; opacity: .55; }
+  .ecg path { fill: none; stroke: #fff; stroke-width: 2.5; stroke-linejoin: round;
+    stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: draw 4s linear infinite; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* 본문 배치 */
+  .layout { max-width: 1180px; margin: -64px auto 0; padding: 0 24px 80px; display: grid;
+    grid-template-columns: 250px minmax(0, 1fr); gap: 32px; position: relative; z-index: 3; }
+  nav.toc { position: sticky; top: 24px; align-self: start; background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px 14px; max-height: calc(100vh - 48px); overflow: auto; }
+  nav.toc h2 { font-size: 13px; letter-spacing: .08em; color: var(--muted); margin: 0 8px 10px; }
+  nav.toc a { display: block; padding: 7px 10px; border-radius: 8px; color: var(--ink); text-decoration: none;
+    font-size: 15px; line-height: 1.4; border-left: 3px solid transparent; }
+  nav.toc a:hover { background: var(--bg); }
+  nav.toc a.active { background: var(--red-soft); color: var(--red); border-left-color: var(--red); font-weight: 700; }
+  nav.toc .num { display: inline-block; width: 22px; color: var(--muted); font-weight: 700; }
+  nav.toc a.active .num { color: var(--red); }
+
+  main { min-width: 0; }
+  section.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 40px 44px; margin-bottom: 28px; }
+  .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .sec-num { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    font-weight: 800; font-size: 19px; color: #fff; background: linear-gradient(135deg, var(--red), #e3664f); }
+  .sec-head h2 { margin: 0; font-size: 28px; letter-spacing: -0.01em; color: var(--navy); }
+  h3 { font-size: 21px; margin: 36px 0 12px; color: var(--navy); display: flex; align-items: center; gap: 10px; }
+  h3::before { content: ""; width: 6px; height: 22px; border-radius: 3px; background: var(--red); }
+  ul, ol { padding-left: 1.3em; }
+  li { margin: 6px 0; }
+  li::marker { color: var(--red); }
+
+  /* 학습목표 */
+  .goals { list-style: none; padding: 0; counter-reset: g; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .goals li { counter-increment: g; background: var(--bg); border-radius: 12px; padding: 14px 16px 14px 54px;
+    position: relative; margin: 0; line-height: 1.55; }
+  .goals li::before { content: counter(g); position: absolute; left: 14px; top: 13px; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--navy); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+
+  /* 표 */
+  .table-wrap { overflow-x: auto; margin: 18px 0; border-radius: 12px; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; line-height: 1.55; min-width: 520px; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 12px 14px; font-weight: 700; white-space: nowrap; }
+  td { padding: 12px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: #fafbfc; }
+  td:first-child { font-weight: 700; color: var(--navy); }
+
+  /* 상자 */
+  .note { display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px; margin: 18px 0; line-height: 1.65; }
+  .note .ico { font-size: 22px; line-height: 1.3; flex: none; }
+  .note.nurse { background: var(--green-soft); border-left: 4px solid var(--green); }
+  .note.nurse .label { color: var(--green); font-weight: 800; margin-right: 6px; }
+  .note.tip { background: var(--amber-soft); border-left: 4px solid var(--amber); }
+  .note.tip .label { color: var(--amber); font-weight: 800; margin-right: 6px; }
+  .note ul { margin: 6px 0 0; }
+
+  /* 공식 카드 */
+  .formulas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 18px 0; }
+  .formula { background: linear-gradient(160deg, var(--blue-soft), #fff); border: 1px solid #d5e2f5; border-radius: 14px; padding: 18px; }
+  .formula .eq { font-size: 19px; font-weight: 800; color: var(--blue); line-height: 1.45; }
+  .formula .sub { color: var(--muted); font-size: 14.5px; margin-top: 6px; line-height: 1.55; }
+
+  /* 수치 카드 */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+  .stat { border-radius: 14px; padding: 16px; background: var(--bg); text-align: center; }
+  .stat .v { font-size: 26px; font-weight: 800; color: var(--red); line-height: 1.2; }
+  .stat .k { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+  /* 흐름 */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0; }
+  .flow span { padding: 7px 13px; border-radius: 10px; font-size: 15px; font-weight: 600; }
+  .flow .v { background: var(--blue-soft); color: var(--blue); }
+  .flow .a { background: var(--red-soft); color: var(--red); }
+  .flow .valve { background: var(--navy); color: #fff; }
+  .flow .n { background: var(--bg); color: var(--ink); }
+  .flow i { font-style: normal; color: var(--muted); }
+
+  /* 그림 */
+  figure { margin: 26px 0; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; text-align: center; }
+  figure img { max-width: 100%; height: auto; border-radius: 8px; cursor: zoom-in; transition: transform .2s; }
+  figure img:hover { transform: scale(1.01); }
+  figcaption { margin-top: 10px; font-size: 15px; color: var(--muted); }
+  figcaption b { color: var(--red); margin-right: 4px; }
+  .lightbox { position: fixed; inset: 0; background: rgba(15,20,30,.86); display: none; place-items: center; z-index: 100; padding: 24px; cursor: zoom-out; }
+  .lightbox.open { display: grid; }
+  .lightbox img { max-width: 96vw; max-height: 90vh; background: #fff; border-radius: 10px; }
+
+  /* 단계 */
+  .steps { list-style: none; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; position: relative; padding: 4px 0 14px 48px; margin: 0; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 32px; height: 32px; border-radius: 50%;
+    background: var(--blue-soft); color: var(--blue); font-weight: 800; display: grid; place-items: center; }
+  .steps li:not(:last-child)::after { content: ""; position: absolute; left: 15px; top: 36px; bottom: 0; width: 2px; background: var(--blue-soft); }
+
+  /* 사정 카드 */
+  .assess { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 16px; }
+  .assess div { background: var(--bg); border-radius: 14px; padding: 18px; line-height: 1.6; }
+  .assess h4 { margin: 0 0 6px; font-size: 17px; color: var(--navy); }
+
+  /* 확인 문제 */
+  .quiz { display: grid; gap: 12px; margin-top: 12px; }
+  details.q { background: var(--bg); border-radius: 14px; padding: 0; border: 1px solid transparent; transition: border-color .2s; }
+  details.q[open] { border-color: #d5e2f5; background: #fff; }
+  details.q summary { list-style: none; cursor: pointer; padding: 16px 18px; display: flex; gap: 12px; align-items: flex-start; font-weight: 600; }
+  details.q summary::-webkit-details-marker { display: none; }
+  details.q .qn { flex: none; width: 30px; height: 30px; border-radius: 8px; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 15px; }
+  details.q .hint { margin-left: auto; flex: none; font-size: 13px; color: var(--blue); font-weight: 700; padding-top: 4px; }
+  details.q[open] .hint { color: var(--muted); }
+  details.q .ans { padding: 0 18px 16px 60px; color: var(--ink); line-height: 1.7; }
+  details.q .ans::before { content: "정답 "; color: var(--green); font-weight: 800; }
+
+  footer { text-align: center; color: var(--muted); font-size: 14px; padding: 10px 24px 40px; }
+  #top { position: fixed; right: 22px; bottom: 22px; width: 48px; height: 48px; border-radius: 50%; border: none;
+    background: var(--navy); color: #fff; font-size: 20px; cursor: pointer; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  #top.show { opacity: 1; pointer-events: auto; }
+
+  /* 모바일 */
+  .toc-toggle { display: none; }
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; margin-top: -48px; }
+    nav.toc { position: relative; top: 0; max-height: none; }
+    nav.toc .links { display: none; }
+    nav.toc.open .links { display: block; margin-top: 8px; }
+    nav.toc h2 { display: none; }
+    .toc-toggle { display: flex; width: 100%; justify-content: space-between; align-items: center; background: none; border: none;
+      font: inherit; font-weight: 700; color: var(--navy); cursor: pointer; padding: 4px 8px; }
+    section.card { padding: 28px 22px; }
+    .goals { grid-template-columns: 1fr; }
+    .hero { padding: 48px 20px 100px; }
+  }
+  @media print {
+    .hero { padding: 24px; background: #fff; color: var(--ink); }
+    .hero .chips, .ecg, nav.toc, #top, #progress { display: none !important; }
+    .layout { display: block; margin: 0; }
+    section.card { box-shadow: none; border: 1px solid var(--line); break-inside: avoid-page; }
+    details.q .ans { display: block; }
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">🫀 간호학과 3학년 수업자료</span>
+    <h1>순환기계 구조와 기능</h1>
+    <p>심장과 혈관이 어떻게 만들어져 있고, 어떻게 혈액을 온몸에 보내며, 몸은 혈압을 어떻게 지키는지 차근차근 살펴봅니다.</p>
+    <div class="chips">
+      <a href="#s2">심장 구조</a><a href="#s3">전도계·심전도</a><a href="#s4">심음·청진</a>
+      <a href="#s5">심박출량</a><a href="#s7">혈압 조절</a><a href="#s11">확인 문제</a>
+    </div>
+  </div>
+  <svg class="ecg" viewBox="0 0 1600 90" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,60 H180 Q200,40 220,60 H260 L270,70 L285,8 L298,78 L308,60 H380 Q420,25 460,60 H660 Q680,40 700,60 H740 L750,70 L765,8 L778,78 L788,60 H860 Q900,25 940,60 H1140 Q1160,40 1180,60 H1220 L1230,70 L1245,8 L1258,78 L1268,60 H1340 Q1380,25 1420,60 H1600"/>
+  </svg>
+</header>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="목차">
+    <button class="toc-toggle" id="tocToggle" aria-expanded="false">📑 목차 <span>▾</span></button>
+    <h2>목차</h2>
+    <div class="links">
+      <a href="#goals"><span class="num">◎</span>학습목표</a>
+      <a href="#s1"><span class="num">1</span>순환계 개요</a>
+      <a href="#s2"><span class="num">2</span>심장의 구조</a>
+      <a href="#s3"><span class="num">3</span>전도계와 심전도</a>
+      <a href="#s4"><span class="num">4</span>심장주기와 심음</a>
+      <a href="#s5"><span class="num">5</span>심박출량</a>
+      <a href="#s6"><span class="num">6</span>혈관의 구조와 기능</a>
+      <a href="#s7"><span class="num">7</span>혈압과 혈압 조절</a>
+      <a href="#s8"><span class="num">8</span>노화에 따른 변화</a>
+      <a href="#s9"><span class="num">9</span>간호사정과의 연결</a>
+      <a href="#s10"><span class="num">10</span>수업 진행안</a>
+      <a href="#s11"><span class="num">11</span>확인 문제</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- 학습목표 -->
+    <section class="card" id="goals">
+      <div class="sec-head"><div class="sec-num">◎</div><h2>학습목표</h2></div>
+      <p>이 수업을 마치면 학생은 다음을 할 수 있다.</p>
+      <ol class="goals">
+        <li>심장의 위치, 심장벽, 심방·심실, 판막의 구조를 설명할 수 있다.</li>
+        <li>관상동맥의 주요 분지와 각 분지가 혈액을 공급하는 부위를 연결할 수 있다.</li>
+        <li>심장 전도계의 순서와 심전도 파형(P, QRS, T)의 의미를 설명할 수 있다.</li>
+        <li>심장주기와 심음(S1~S4)의 발생 시점을 설명하고 청진 부위를 찾을 수 있다.</li>
+        <li>심박출량을 결정하는 요인(심박동수, 전부하, 후부하, 수축력)을 설명할 수 있다.</li>
+        <li>동맥·모세혈관·정맥의 구조적 차이와 기능을 비교할 수 있다.</li>
+        <li>혈압 조절의 단기·장기 기전을 설명할 수 있다.</li>
+        <li>노화에 따른 순환기계 변화와 간호사정 시 유의점을 말할 수 있다.</li>
+      </ol>
+    </section>
+
+    <!-- 1 -->
+    <section class="card" id="s1">
+      <div class="sec-head"><div class="sec-num">1</div><h2>순환계 개요</h2></div>
+      <ul>
+        <li>순환계는 <b>심장(펌프)</b>, <b>혈관(관)</b>, <b>혈액(운반 매체)</b>으로 구성된다.</li>
+        <li>주요 기능: 산소·영양소 운반, 이산화탄소·대사산물 제거, 호르몬 운반, 체온 조절, 면역세포 운반</li>
+      </ul>
+      <h3>두 개의 순환 경로</h3>
+      <div class="formulas">
+        <div class="formula"><div class="eq">폐순환 · 저압계</div><div class="sub">우심실 → 폐동맥 → 폐 → 폐정맥 → 좌심방<br>가스교환이 일어난다.</div></div>
+        <div class="formula" style="background:linear-gradient(160deg,var(--red-soft),#fff);border-color:#f5cfca"><div class="eq" style="color:var(--red)">체순환 · 고압계</div><div class="sub">좌심실 → 대동맥 → 전신 → 상·하대정맥 → 우심방</div></div>
+      </div>
+      <div class="note tip"><span class="ico">💡</span><div><span class="label">헷갈리기 쉬운 점</span>폐동맥은 정맥혈을, 폐정맥은 동맥혈을 운반한다.</div></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="card" id="s2">
+      <div class="sec-head"><div class="sec-num">2</div><h2>심장의 구조</h2></div>
+
+      <h3>2-1. 위치와 크기</h3>
+      <ul>
+        <li>흉강의 종격동 안, 흉골 뒤쪽에 위치하며 약 2/3가 정중선 왼쪽에 있다.</li>
+        <li>심첨(apex)은 대개 좌측 5번째 늑간과 쇄골중앙선이 만나는 부위에 있다 → 최대박동점(PMI) 촉진 위치</li>
+        <li>크기는 대략 본인 주먹 정도, 무게는 성인에서 약 250~350 g</li>
+      </ul>
+
+      <h3>2-2. 심막과 심장벽</h3>
+      <div class="table-wrap"><table>
+        <tr><th>구분</th><th>구성</th><th>특징</th></tr>
+        <tr><td>섬유성 심막</td><td>질긴 결합조직</td><td>심장을 보호하고 과도한 확장을 막음</td></tr>
+        <tr><td>장막성 심막</td><td>벽측판 + 장측판(=심외막)</td><td>두 층 사이 심막강에 소량의 심막액이 있어 마찰을 줄임</td></tr>
+        <tr><td>심외막</td><td>심장벽 바깥층</td><td>관상혈관이 지나감</td></tr>
+        <tr><td>심근층</td><td>심장근육</td><td>실제 수축을 담당, 좌심실 벽이 가장 두꺼움</td></tr>
+        <tr><td>심내막</td><td>내피세포층</td><td>판막을 덮고 혈관 내막과 이어짐</td></tr>
+      </table></div>
+      <div class="note nurse"><span class="ico">🩺</span><div><span class="label">간호 연결</span>심막강에 액체가 빠르게 차면 심장이 충분히 확장하지 못한다(심장눌림증, cardiac tamponade).</div></div>
+
+      <h3>2-3. 심방·심실과 판막</h3>
+      <ul>
+        <li>4개의 방: 우심방, 우심실, 좌심방, 좌심실</li>
+        <li>좌심실은 체순환의 높은 압력을 이겨야 하므로 우심실보다 벽이 훨씬 두껍다.</li>
+        <li>판막은 혈액이 한 방향으로만 흐르도록 한다.</li>
+      </ul>
+      <div class="table-wrap"><table>
+        <tr><th>판막</th><th>위치</th><th>종류</th></tr>
+        <tr><td>삼첨판</td><td>우심방 ↔ 우심실</td><td>방실판</td></tr>
+        <tr><td>승모판(이첨판)</td><td>좌심방 ↔ 좌심실</td><td>방실판</td></tr>
+        <tr><td>폐동맥판</td><td>우심실 ↔ 폐동맥</td><td>반월판</td></tr>
+        <tr><td>대동맥판</td><td>좌심실 ↔ 대동맥</td><td>반월판</td></tr>
+      </table></div>
+      <ul><li>방실판은 <b>건삭</b>과 <b>유두근</b>에 연결되어 심실 수축 시 판막이 심방 쪽으로 뒤집히지 않게 한다.</li></ul>
+
+      <h3>2-4. 혈액이 흐르는 순서</h3>
+      <div class="flow" aria-label="혈액이 흐르는 순서">
+        <span class="v">상·하대정맥</span><i>→</i><span class="v">우심방</span><i>→</i><span class="valve">삼첨판</span><i>→</i>
+        <span class="v">우심실</span><i>→</i><span class="valve">폐동맥판</span><i>→</i><span class="v">폐동맥</span><i>→</i>
+        <span class="n">폐</span><i>→</i><span class="a">폐정맥</span><i>→</i><span class="a">좌심방</span><i>→</i>
+        <span class="valve">승모판</span><i>→</i><span class="a">좌심실</span><i>→</i><span class="valve">대동맥판</span><i>→</i>
+        <span class="a">대동맥</span><i>→</i><span class="n">전신</span>
+      </div>
+      <figure>
+        <img src="images/fig1_blood_flow.png" alt="혈액이 흐르는 순서와 폐순환·체순환 도식" loading="lazy">
+        <figcaption><b>그림 1</b>혈액이 흐르는 순서와 폐순환·체순환 (도식)</figcaption>
+      </figure>
+
+      <h3>2-5. 관상순환</h3>
+      <div class="table-wrap"><table>
+        <tr><th>동맥</th><th>주요 공급 부위</th></tr>
+        <tr><td>좌전하행지(LAD)</td><td>좌심실 앞벽, 심실중격 앞쪽, 심첨</td></tr>
+        <tr><td>좌회선지(LCx)</td><td>좌심방, 좌심실 옆벽·뒤벽</td></tr>
+        <tr><td>우관상동맥(RCA)</td><td>우심방, 우심실, 좌심실 아래벽, 대부분의 사람에서 동방결절·방실결절</td></tr>
+      </table></div>
+      <ul>
+        <li>관상동맥 관류는 주로 <b>이완기</b>에 일어난다 → 심박동수가 빨라져 이완기가 짧아지면 심근 관류가 줄어든다.</li>
+        <li>정맥혈은 관상정맥동을 통해 우심방으로 돌아간다.</li>
+      </ul>
+      <div class="note nurse"><span class="ico">🩺</span><div><span class="label">간호 연결</span>어느 관상동맥이 막혔는지에 따라 심근경색 부위와 동반되는 부정맥 양상이 달라진다(예: RCA 폐색 시 서맥·방실차단 동반 가능).</div></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="card" id="s3">
+      <div class="sec-head"><div class="sec-num">3</div><h2>심장 전도계와 심전도</h2></div>
+
+      <h3>3-1. 전도 경로</h3>
+      <div class="flow">
+        <span class="a">동방결절(SA node)</span><i>→</i><span class="n">심방</span><i>→</i><span class="a">방실결절(AV node)</span><i>→</i>
+        <span class="n">히스속</span><i>→</i><span class="n">좌·우 각</span><i>→</i><span class="n">퍼킨제 섬유</span><i>→</i><span class="valve">심실 근육</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v">60~100</div><div class="k">동방결절 (회/분)<br>정상 심박조율기</div></div>
+        <div class="stat"><div class="v">40~60</div><div class="k">방실결절·접합부 (회/분)<br>동방결절 이상 시 대신 박동</div></div>
+        <div class="stat"><div class="v">20~40</div><div class="k">심실·퍼킨제 섬유 (회/분)<br>마지막 보조 조율기, 박출량 부족</div></div>
+      </div>
+      <ul>
+        <li>방실결절에서 전도가 잠시 지연되어 심방이 수축을 끝내고 심실이 채워질 시간을 확보한다.</li>
+        <li>심근세포는 <b>자동능, 흥분성, 전도성, 수축성</b>의 특성을 가진다.</li>
+      </ul>
+      <figure>
+        <img src="images/fig2_conduction.png" alt="심장 전도계의 경로와 부위별 고유 박동수 도식" loading="lazy">
+        <figcaption><b>그림 2</b>심장 전도계의 경로와 부위별 고유 박동수 (도식)</figcaption>
+      </figure>
+
+      <h3>3-2. 심전도 기본 파형</h3>
+      <div class="table-wrap"><table>
+        <tr><th>파형·간격</th><th>의미</th><th>정상 기준(성인)</th></tr>
+        <tr><td>P파</td><td>심방 탈분극</td><td>—</td></tr>
+        <tr><td>PR 간격</td><td>심방에서 심실까지 전도 시간</td><td>0.12~0.20초</td></tr>
+        <tr><td>QRS군</td><td>심실 탈분극</td><td>0.12초 미만</td></tr>
+        <tr><td>T파</td><td>심실 재분극</td><td>—</td></tr>
+        <tr><td>QT 간격</td><td>심실 탈분극~재분극 전체</td><td>심박동수에 따라 보정(QTc)</td></tr>
+      </table></div>
+      <ul><li>심방 재분극은 QRS군에 가려져 보이지 않는다.</li></ul>
+      <figure>
+        <img src="images/fig3_ecg.png" alt="심전도 기본 파형과 간격" loading="lazy">
+        <figcaption><b>그림 3</b>심전도 기본 파형과 간격</figcaption>
+      </figure>
+
+      <h3>3-3. 자율신경의 영향</h3>
+      <div class="formulas">
+        <div class="formula" style="background:linear-gradient(160deg,var(--red-soft),#fff);border-color:#f5cfca"><div class="eq" style="color:var(--red)">교감신경 (β1 수용체)</div><div class="sub">심박동수 ↑ · 전도속도 ↑ · 수축력 ↑</div></div>
+        <div class="formula"><div class="eq">부교감신경 (미주신경)</div><div class="sub">주로 동방·방실결절에 작용<br>심박동수 ↓ · 방실전도 ↓</div></div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="card" id="s4">
+      <div class="sec-head"><div class="sec-num">4</div><h2>심장주기와 심음</h2></div>
+
+      <h3>4-1. 심장주기</h3>
+      <ul>
+        <li>한 번의 심장박동 동안 일어나는 수축기(systole)와 이완기(diastole)의 반복</li>
+        <li>심박동수 75회/분일 때 한 주기는 약 0.8초이며, 이완기가 수축기보다 길다.</li>
+      </ul>
+      <ol class="steps">
+        <li><b>심실 충만기(이완기)</b>: 방실판 열림, 혈액이 심실로 유입, 마지막에 심방 수축(atrial kick)으로 추가 충만</li>
+        <li><b>등용성 수축기</b>: 모든 판막이 닫힌 채 심실 압력 상승</li>
+        <li><b>심실 박출기</b>: 반월판 열림, 혈액 박출</li>
+        <li><b>등용성 이완기</b>: 모든 판막이 닫힌 채 심실 압력 하강</li>
+      </ol>
+
+      <h3>4-2. 심음</h3>
+      <div class="table-wrap"><table>
+        <tr><th>심음</th><th>발생 원인</th><th>시점</th><th>잘 들리는 곳</th><th>의미</th></tr>
+        <tr><td>S1 ("럽")</td><td>방실판(승모판·삼첨판) 닫힘</td><td>수축기 시작</td><td>심첨부</td><td>정상</td></tr>
+        <tr><td>S2 ("덥")</td><td>반월판(대동맥판·폐동맥판) 닫힘</td><td>이완기 시작</td><td>심저부</td><td>정상</td></tr>
+        <tr><td>S3</td><td>이완 초기 빠른 심실 충만</td><td>S2 직후</td><td>심첨부(종형 청진기)</td><td>소아·젊은 성인은 정상일 수 있음, 성인에서는 심부전 시사</td></tr>
+        <tr><td>S4</td><td>경직된 심실로 심방이 혈액을 밀어 넣음</td><td>S1 직전</td><td>심첨부(종형 청진기)</td><td>고혈압, 좌심실 비대, 심근허혈 등</td></tr>
+      </table></div>
+      <figure>
+        <img src="images/fig4_heart_sounds.png" alt="심장주기 안에서 S1, S2, S3, S4가 들리는 시점" loading="lazy">
+        <figcaption><b>그림 4</b>심장주기 안에서 S1·S2·S3·S4가 들리는 시점</figcaption>
+      </figure>
+
+      <h3>4-3. 청진 부위</h3>
+      <div class="table-wrap"><table>
+        <tr><th>부위</th><th>위치</th></tr>
+        <tr><td>대동맥판 영역</td><td>우측 흉골연 2번째 늑간</td></tr>
+        <tr><td>폐동맥판 영역</td><td>좌측 흉골연 2번째 늑간</td></tr>
+        <tr><td>에르브점</td><td>좌측 흉골연 3번째 늑간</td></tr>
+        <tr><td>삼첨판 영역</td><td>좌측 흉골연 4~5번째 늑간</td></tr>
+        <tr><td>승모판 영역</td><td>좌측 5번째 늑간과 쇄골중앙선 교차점(심첨부)</td></tr>
+      </table></div>
+      <figure>
+        <img src="images/fig5_auscultation.png" alt="심음 청진 부위 5곳" loading="lazy">
+        <figcaption><b>그림 5</b>심음 청진 부위 5곳 (환자를 마주 본 모습)</figcaption>
+      </figure>
+    </section>
+
+    <!-- 5 -->
+    <section class="card" id="s5">
+      <div class="sec-head"><div class="sec-num">5</div><h2>심박출량과 결정 요인</h2></div>
+      <div class="formulas">
+        <div class="formula"><div class="eq">심박출량(CO) =<br>심박동수(HR) × 1회 박출량(SV)</div></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v">4~8 L/분</div><div class="k">성인 정상 심박출량</div></div>
+        <div class="stat"><div class="v">60~100 mL</div><div class="k">1회 박출량</div></div>
+        <div class="stat"><div class="v">55~70%</div><div class="k">박출률(EF)<br>확장기말 용적 중 박출되는 비율</div></div>
+      </div>
+      <h3>1회 박출량을 결정하는 세 가지 요인</h3>
+      <div class="table-wrap"><table>
+        <tr><th>요인</th><th>정의</th><th>높이는 상황</th><th>낮추는 상황</th></tr>
+        <tr><td>전부하(preload)</td><td>이완기말 심실이 늘어난 정도(이완기말 용적)</td><td>수액 과다, 신부전</td><td>탈수, 출혈, 이뇨제</td></tr>
+        <tr><td>후부하(afterload)</td><td>심실이 혈액을 내보낼 때 이겨야 하는 저항</td><td>고혈압, 대동맥판 협착, 혈관수축</td><td>혈관확장제</td></tr>
+        <tr><td>수축력(contractility)</td><td>전부하와 관계없는 심근 자체의 수축 힘</td><td>교감신경 자극, 디곡신, 도부타민</td><td>심근경색, 저산소증, 산증, β차단제</td></tr>
+      </table></div>
+      <div class="note tip"><span class="ico">📈</span><div><span class="label">프랑크-스탈링 법칙</span>일정 범위 안에서는 심근이 많이 늘어날수록(전부하 ↑) 더 강하게 수축한다. 그 범위를 넘으면 오히려 박출량이 줄어든다(심부전).</div></div>
+      <figure>
+        <img src="images/fig6_frank_starling.png" alt="프랑크-스탈링 곡선" loading="lazy">
+        <figcaption><b>그림 6</b>프랑크-스탈링 곡선: 전부하와 1회 박출량, 수축력에 따른 변화 (도식)</figcaption>
+      </figure>
+    </section>
+
+    <!-- 6 -->
+    <section class="card" id="s6">
+      <div class="sec-head"><div class="sec-num">6</div><h2>혈관의 구조와 기능</h2></div>
+
+      <h3>6-1. 혈관벽의 3층</h3>
+      <div class="assess">
+        <div><h4>내막</h4>내피세포, 혈액과 직접 닿음</div>
+        <div><h4>중막</h4>평활근과 탄력섬유, 혈관 지름 조절</div>
+        <div><h4>외막</h4>결합조직, 혈관 지지</div>
+      </div>
+
+      <h3>6-2. 혈관 종류별 비교</h3>
+      <div class="table-wrap"><table>
+        <tr><th>혈관</th><th>구조 특징</th><th>주요 기능</th></tr>
+        <tr><td>대동맥·큰 동맥</td><td>탄력섬유 풍부</td><td>수축기 압력을 받아 늘어났다가 이완기에 되돌아오며 혈류를 이어줌</td></tr>
+        <tr><td>세동맥</td><td>평활근 비율 높음</td><td>말초혈관저항의 주된 결정 부위, 조직 혈류 분배</td></tr>
+        <tr><td>모세혈관</td><td>내피세포 한 층</td><td>물질 교환</td></tr>
+        <tr><td>세정맥·정맥</td><td>벽이 얇고 판막 있음</td><td>혈액 저장(전체 혈액의 약 60~70%), 심장으로 환류</td></tr>
+      </table></div>
+      <ul><li>정맥 환류를 돕는 요인: 정맥 판막, 골격근 펌프, 호흡 펌프(흡기 시 흉강 내압 ↓)</li></ul>
+
+      <h3>6-3. 모세혈관에서의 체액 이동 (스탈링 힘)</h3>
+      <ul>
+        <li><b>정수압</b>: 혈관 밖으로 밀어내는 힘 (동맥 쪽 끝에서 큼)</li>
+        <li><b>교질삼투압</b>: 주로 알부민에 의해 혈관 안으로 끌어당기는 힘</li>
+        <li>동맥 쪽 끝에서는 여과, 정맥 쪽 끝에서는 재흡수가 우세하며 남는 체액은 림프관으로 돌아간다.</li>
+      </ul>
+      <div class="note nurse"><span class="ico">🩺</span><div><span class="label">간호 연결 — 부종의 원인 생각해 보기</span>
+        <ul>
+          <li>정수압 ↑: 심부전, 정맥 폐쇄</li>
+          <li>교질삼투압 ↓: 저알부민혈증(간질환, 신증후군, 영양불량)</li>
+          <li>모세혈관 투과성 ↑: 염증, 화상, 패혈증</li>
+          <li>림프 배액 장애: 림프절 절제 후</li>
+        </ul></div></div>
+      <figure>
+        <img src="images/fig7_starling_forces.png" alt="모세혈관에서의 체액 이동과 부종의 원인" loading="lazy">
+        <figcaption><b>그림 7</b>모세혈관에서의 체액 이동(스탈링 힘)과 부종의 원인 (도식)</figcaption>
+      </figure>
+    </section>
+
+    <!-- 7 -->
+    <section class="card" id="s7">
+      <div class="sec-head"><div class="sec-num">7</div><h2>혈압과 혈압 조절</h2></div>
+
+      <h3>7-1. 기본 개념</h3>
+      <div class="formulas">
+        <div class="formula"><div class="eq">혈압 = 심박출량 × 전신혈관저항</div></div>
+        <div class="formula"><div class="eq">맥압 = 수축기압 − 이완기압</div></div>
+        <div class="formula"><div class="eq">MAP ≈ 이완기압 + ⅓ × 맥압</div><div class="sub">평균동맥압. 주요 장기 관류를 위해 대개 60~65 mmHg 이상이 필요하다.</div></div>
+      </div>
+
+      <h3>7-2. 단기 조절 (초~분 단위)</h3>
+      <ul>
+        <li><b>압수용체 반사</b>: 경동맥동과 대동맥궁의 압수용체가 혈압 변화를 감지 → 연수의 심혈관중추 → 자율신경 조절
+          <ul>
+            <li>혈압 ↑ → 부교감 ↑, 교감 ↓ → 심박동수·수축력 ↓, 혈관확장 → 혈압 ↓</li>
+            <li>혈압 ↓ → 반대 반응</li>
+          </ul>
+        </li>
+        <li><b>화학수용체</b>: 경동맥체·대동맥체가 산소 ↓, 이산화탄소 ↑, pH ↓를 감지하여 호흡과 혈압에 영향</li>
+      </ul>
+
+      <h3>7-3. 장기 조절 (시간~일 단위)</h3>
+      <div class="table-wrap"><table>
+        <tr><th>기전</th><th>자극</th><th>작용</th><th>결과</th></tr>
+        <tr><td>레닌-안지오텐신-알도스테론계(RAAS)</td><td>신장 관류 ↓, 교감신경 자극</td><td>안지오텐신 II: 강한 혈관수축, 알도스테론 분비 → 나트륨·수분 재흡수</td><td>혈압 ↑</td></tr>
+        <tr><td>항이뇨호르몬(ADH)</td><td>혈장 삼투압 ↑, 혈액량 ↓</td><td>신장 집합관에서 수분 재흡수, 혈관수축</td><td>혈압 ↑</td></tr>
+        <tr><td>나트륨이뇨펩타이드(ANP, BNP)</td><td>심방·심실 벽이 늘어남</td><td>나트륨·수분 배설, 혈관확장, RAAS 억제</td><td>혈압 ↓</td></tr>
+      </table></div>
+      <figure>
+        <img src="images/fig8_bp_regulation.png" alt="혈압이 떨어졌을 때의 조절 흐름" loading="lazy">
+        <figcaption><b>그림 8</b>혈압이 떨어졌을 때의 조절 흐름: 압수용체 반사, RAAS, ADH</figcaption>
+      </figure>
+      <div class="note nurse"><span class="ico">🩺</span><div><span class="label">간호 연결</span>ACE 억제제, 안지오텐신 수용체 차단제, 이뇨제, β차단제 등 항고혈압제가 위 기전의 어디에 작용하는지 연결해 보자(약리 수업과 연계). BNP는 심부전 진단·경과 관찰에 쓰이는 혈액검사 지표이다.</div></div>
+    </section>
+
+    <!-- 8 -->
+    <section class="card" id="s8">
+      <div class="sec-head"><div class="sec-num">8</div><h2>노화에 따른 순환기계 변화</h2></div>
+      <div class="table-wrap"><table>
+        <tr><th>변화</th><th>결과</th><th>간호사정 시 유의점</th></tr>
+        <tr><td>동맥벽 경직</td><td>수축기압 ↑, 맥압 ↑</td><td>수축기 고혈압 흔함</td></tr>
+        <tr><td>압수용체 민감도 ↓</td><td>체위 변화 시 혈압 조절 지연</td><td>기립성 저혈압, 낙상 위험</td></tr>
+        <tr><td>동방결절 세포 수 ↓, 전도계 섬유화</td><td>서맥, 부정맥 증가</td><td>맥박 리듬 사정</td></tr>
+        <tr><td>판막 두꺼워짐·석회화</td><td>심잡음</td><td>대동맥판 협착 여부 확인</td></tr>
+        <tr><td>좌심실 벽 두꺼워짐, 이완 기능 ↓</td><td>S4 들릴 수 있음, 운동 시 최대 심박동수 ↓</td><td>활동 내성 사정</td></tr>
+      </table></div>
+    </section>
+
+    <!-- 9 -->
+    <section class="card" id="s9">
+      <div class="sec-head"><div class="sec-num">9</div><h2>간호사정과의 연결 — 실습 전 정리</h2></div>
+      <div class="assess">
+        <div><h4>❤️ 활력징후</h4>맥박수·리듬·강도, 혈압(양팔 비교, 체위성 혈압), 호흡, 산소포화도</div>
+        <div><h4>👁️ 시진</h4>피부색(청색증, 창백), 경정맥 팽대, 부종, 곤봉지</div>
+        <div><h4>✋ 촉진</h4>최대박동점, 말초맥박(요골·상완·대퇴·슬와·족배·후경골), 모세혈관 재충혈 시간(정상 약 2초 이내), 함요부종 정도</div>
+        <div><h4>🩺 청진</h4>5개 청진 부위에서 S1·S2 확인, 추가 심음·심잡음 여부</div>
+        <div><h4>💬 증상 문진</h4>흉통(양상, 부위, 방사통, 지속시간), 호흡곤란(기좌호흡, 발작성 야간 호흡곤란), 피로, 실신, 두근거림</div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="card" id="s10">
+      <div class="sec-head"><div class="sec-num">10</div><h2>수업 진행안 (예시, 100분 기준)</h2></div>
+      <div class="table-wrap"><table>
+        <tr><th>시간</th><th>내용</th><th>방식</th></tr>
+        <tr><td>10분</td><td>도입: 혈액이 흐르는 순서 빈칸 채우기</td><td>개별 퀴즈</td></tr>
+        <tr><td>25분</td><td>심장 구조, 판막, 관상순환</td><td>강의 + 심장 모형·그림</td></tr>
+        <tr><td>20분</td><td>전도계, 심전도 기본 파형, 심장주기·심음</td><td>강의 + 심음 음원 듣기</td></tr>
+        <tr><td>10분</td><td>휴식</td><td>—</td></tr>
+        <tr><td>20분</td><td>심박출량, 혈관, 혈압 조절</td><td>강의</td></tr>
+        <tr><td>10분</td><td>사례 적용: "출혈 환자의 몸은 혈압을 어떻게 지키는가"</td><td>짝 토론</td></tr>
+        <tr><td>5분</td><td>정리 및 확인 문제</td><td>퀴즈</td></tr>
+      </table></div>
+    </section>
+
+    <!-- 11 -->
+    <section class="card" id="s11">
+      <div class="sec-head"><div class="sec-num">11</div><h2>확인 문제</h2></div>
+      <p style="color:var(--muted);margin-top:0">먼저 스스로 답해 본 뒤, 문제를 눌러 정답을 확인하세요.</p>
+      <div class="quiz">
+        <details class="q"><summary><span class="qn">1</span><span>동방결절의 고유 박동수는 분당 몇 회인가?</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">60~100회</div></details>
+        <details class="q"><summary><span class="qn">2</span><span>S1은 어떤 판막이 닫힐 때 나는 소리이며, 어디에서 가장 잘 들리는가?</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">방실판(승모판·삼첨판)이 닫힐 때, 심첨부에서 가장 잘 들린다.</div></details>
+        <details class="q"><summary><span class="qn">3</span><span>관상동맥 관류는 심장주기 중 언제 주로 일어나는가? 그 이유는?</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">이완기. 수축기에는 심근이 관상혈관을 눌러 혈류가 줄기 때문이다. 따라서 빈맥으로 이완기가 짧아지면 심근 관류가 감소한다.</div></details>
+        <details class="q"><summary><span class="qn">4</span><span>탈수 환자에서 1회 박출량이 줄어드는 이유를 전부하 개념으로 설명하시오.</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">체액량 감소 → 정맥 환류 감소 → 이완기말 심실 용적(전부하) 감소 → 프랑크-스탈링 법칙에 따라 수축력·1회 박출량 감소</div></details>
+        <details class="q"><summary><span class="qn">5</span><span>출혈로 혈압이 떨어질 때 몸에서 일어나는 단기·장기 보상 기전을 각각 하나 이상 쓰시오.</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">단기: 압수용체 반사로 교감신경 활성 → 심박동수·수축력 증가, 혈관수축. 장기: RAAS 활성, ADH 분비 → 나트륨·수분 보유, 혈관수축</div></details>
+        <details class="q"><summary><span class="qn">6</span><span>저알부민혈증 환자에게 부종이 생기는 이유를 스탈링 힘으로 설명하시오.</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">알부민 감소 → 혈관 내 교질삼투압 감소 → 혈관 안으로 끌어당기는 힘이 약해져 체액이 조직으로 빠져나감</div></details>
+        <details class="q"><summary><span class="qn">7</span><span>노인 환자가 침대에서 갑자기 일어설 때 어지러움을 호소하는 이유는?</span><span class="hint">정답 보기</span></summary>
+          <div class="ans">노화로 압수용체 민감도가 떨어져 체위 변화 시 혈압 보상이 늦어지므로 기립성 저혈압이 생긴다.</div></details>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>순환기계 구조와 기능 · 간호학과 3학년 수업자료</footer>
+
+<button id="top" aria-label="맨 위로">↑</button>
+<div class="lightbox" id="lightbox" role="dialog" aria-label="그림 크게 보기"><img alt=""></div>
+
+<script>
+  // 읽은 정도 막대 + 맨 위로 버튼
+  const bar = document.getElementById('progress');
+  const topBtn = document.getElementById('top');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = pct + '%';
+    topBtn.classList.toggle('show', h.scrollTop > 600);
+  }, { passive: true });
+  topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // 지금 읽는 장을 목차에 표시
+  const links = [...document.querySelectorAll('nav.toc .links a')];
+  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        const a = map.get(e.target.id); if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  document.querySelectorAll('main section[id]').forEach(s => io.observe(s));
+
+  // 모바일 목차 열고 닫기
+  const toc = document.getElementById('toc');
+  const tt = document.getElementById('tocToggle');
+  tt.addEventListener('click', () => { toc.classList.toggle('open'); tt.setAttribute('aria-expanded', toc.classList.contains('open')); });
+  links.forEach(a => a.addEventListener('click', () => toc.classList.remove('open')));
+
+  // 그림 크게 보기
+  const lb = document.getElementById('lightbox');
+  const lbImg = lb.querySelector('img');
+  document.querySelectorAll('figure img').forEach(img => img.addEventListener('click', () => {
+    lbImg.src = img.src; lbImg.alt = img.alt; lb.classList.add('open');
+  }));
+  lb.addEventListener('click', () => lb.classList.remove('open'));
+  addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+  // 인쇄할 때는 정답을 모두 펼침
+  addEventListener('beforeprint', () => document.querySelectorAll('details.q').forEach(d => d.open = true));
+</script>
+</body>
+</html>
